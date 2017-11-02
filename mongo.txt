@@ -1,0 +1,191 @@
+> // 1. Create a collection named orders.
+> use deneb
+switched to db deneb
+>  // 1. Create a collection named orders.
+> db.createCollection('orders')
+{ "ok" : 1 }
+> db.getCollectionNames()
+[ "games", "orders" ]
+> var orders = db.orders
+> orders.insert({name: "iphoneX", orderDate: "2017-02-03", quantity: 5, price: 500, orderTotal: 2500 });
+WriteResult({ "nInserted" : 1 })
+> orders.find()
+{ "_id" : ObjectId("59fb64e6ead03a76ead41b84"), "name" : "iphoneX", "orderDate" : "2017-02-03", "quantity" : 5, "price" : 500, "orderTotal" : 2500 }
+> // 2. Insert 3 documents represent an order
+> orders.insert({name: "iphone8", orderDate: "2017-04-04", quantity: 5, price: 400, orderTotal: 2000 });
+WriteResult({ "nInserted" : 1 })
+> orders.insert({name: "iphone9", orderDate: "2017-01-02", quantity: 5, price: 300, orderTotal: 1500 });
+WriteResult({ "nInserted" : 1 })
+> orders.find()
+{ "_id" : ObjectId("59fb64e6ead03a76ead41b84"), "name" : "iphoneX", "orderDate" : "2017-02-03", "quantity" : 5, "price" : 500, "orderTotal" : 2500 }
+{ "_id" : ObjectId("59fb654cead03a76ead41b85"), "name" : "iphone8", "orderDate" : "2017-04-04", "quantity" : 5, "price" : 400, "orderTotal" : 2000 }
+{ "_id" : ObjectId("59fb6588ead03a76ead41b86"), "name" : "iphone9", "orderDate" : "2017-01-02", "quantity" : 5, "price" : 300, "orderTotal" : 1500 }
+> // 3. Find all orders and make them look pretty
+> orders.find().pretty();
+{
+	"_id" : ObjectId("59fb64e6ead03a76ead41b84"),
+	"name" : "iphoneX",
+	"orderDate" : "2017-02-03",
+	"quantity" : 5,
+	"price" : 500,
+	"orderTotal" : 2500
+}
+{
+	"_id" : ObjectId("59fb654cead03a76ead41b85"),
+	"name" : "iphone8",
+	"orderDate" : "2017-04-04",
+	"quantity" : 5,
+	"price" : 400,
+	"orderTotal" : 2000
+}
+{
+	"_id" : ObjectId("59fb6588ead03a76ead41b86"),
+	"name" : "iphone9",
+	"orderDate" : "2017-01-02",
+	"quantity" : 5,
+	"price" : 300,
+	"orderTotal" : 1500
+}
+> // 4.Find all orders with an orderDate that is after 1/31/2017.
+> orders.find({orderDate: {$gt: new Date('2017-01-31')}});
+> orders.find({orderDate: {$gt: new ISODate('2017-01-31')}});
+> // Update date and add lineItems
+> orders.update({name:"iphone8"}, {$set: {lineItems: [{name: "case", quantity:4, price: 20}]}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> orders.find({name: "iphone8"}).pretty()
+{
+	"_id" : ObjectId("59fb654cead03a76ead41b85"),
+	"name" : "iphone8",
+	"orderDate" : "2017-04-04",
+	"quantity" : 5,
+	"price" : 400,
+	"orderTotal" : 2000,
+	"lineItems" : [
+		{
+			"name" : "case",
+			"quantity" : 4,
+			"price" : 20
+		}
+	]
+}
+> orders.update({name:"iphone8"}, {$set: {orderDate2: new Date("2017-12-31"}});
+... }{
+2017-11-02T13:57:17.795-0500 E QUERY    [thread1] SyntaxError: missing ) after argument list @(shell):1:73
+> orders.update({name:"iphone8"}, {$set: {orderDate2: new Date("2017-12-31"}}});
+2017-11-02T13:57:25.115-0500 E QUERY    [thread1] SyntaxError: missing ) after argument list @(shell):1:73
+> orders.update({name:"iphone8"}, {$set: {orderDate2: new Date("2017-12-31")}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> orders.find({orderDate2: {$gt: new Date('2017-01-31')}});
+{ "_id" : ObjectId("59fb654cead03a76ead41b85"), "name" : "iphone8", "orderDate" : "2017-04-04", "quantity" : 5, "price" : 400, "orderTotal" : 2000, "lineItems" : [ { "name" : "case", "quantity" : 4, "price" : 20 } ], "orderDate2" : ISODate("2017-12-31T00:00:00Z") }
+> orders.find({orderDate2: {$gt: new Date('2017-01-31')}}).pretty();
+{
+	"_id" : ObjectId("59fb654cead03a76ead41b85"),
+	"name" : "iphone8",
+	"orderDate" : "2017-04-04",
+	"quantity" : 5,
+	"price" : 400,
+	"orderTotal" : 2000,
+	"lineItems" : [
+		{
+			"name" : "case",
+			"quantity" : 4,
+			"price" : 20
+		}
+	],
+	"orderDate2" : ISODate("2017-12-31T00:00:00Z")
+}
+> orders.find().pretty();
+{
+	"_id" : ObjectId("59fb64e6ead03a76ead41b84"),
+	"name" : "iphoneX",
+	"orderDate" : "2017-02-03",
+	"quantity" : 5,
+	"price" : 500,
+	"orderTotal" : 2500
+}
+{
+	"_id" : ObjectId("59fb654cead03a76ead41b85"),
+	"name" : "iphone8",
+	"orderDate" : "2017-04-04",
+	"quantity" : 5,
+	"price" : 400,
+	"orderTotal" : 2000,
+	"lineItems" : [
+		{
+			"name" : "case",
+			"quantity" : 4,
+			"price" : 20
+		}
+	],
+	"orderDate2" : ISODate("2017-12-31T00:00:00Z")
+}
+{
+	"_id" : ObjectId("59fb6588ead03a76ead41b86"),
+	"name" : "iphone9",
+	"orderDate" : "2017-01-02",
+	"quantity" : 5,
+	"price" : 300,
+	"orderTotal" : 1500
+}
+> // Update date for iphone X and iphone9
+> orders.update({name: "iphoneX"}, {$set: {orderDate2: new Date ("2017-02-03")}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> orders.update({name: "iphone9"}, {$set: {orderDate2: new Date ("2017-01-02")}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> orders.find().pretty()
+{
+	"_id" : ObjectId("59fb64e6ead03a76ead41b84"),
+	"name" : "iphoneX",
+	"orderDate" : "2017-02-03",
+	"quantity" : 5,
+	"price" : 500,
+	"orderTotal" : 2500,
+	"orderDate2" : ISODate("2017-02-03T00:00:00Z")
+}
+{
+	"_id" : ObjectId("59fb654cead03a76ead41b85"),
+	"name" : "iphone8",
+	"orderDate" : "2017-04-04",
+	"quantity" : 5,
+	"price" : 400,
+	"orderTotal" : 2000,
+	"lineItems" : [
+		{
+			"name" : "case",
+			"quantity" : 4,
+			"price" : 20
+		}
+	],
+	"orderDate2" : ISODate("2017-12-31T00:00:00Z")
+}
+{
+	"_id" : ObjectId("59fb6588ead03a76ead41b86"),
+	"name" : "iphone9",
+	"orderDate" : "2017-01-02",
+	"quantity" : 5,
+	"price" : 300,
+	"orderTotal" : 1500,
+	"orderDate2" : ISODate("2017-01-02T00:00:00Z")
+}
+> // 4. Find orders with orderDate after 1/31/2017
+> orders.find({orderDate: {$gt: new Date('2017-01-31')}})
+> orders.find({orderDate2: {$gt: new Date('2017-01-31')}})
+{ "_id" : ObjectId("59fb64e6ead03a76ead41b84"), "name" : "iphoneX", "orderDate" : "2017-02-03", "quantity" : 5, "price" : 500, "orderTotal" : 2500, "orderDate2" : ISODate("2017-02-03T00:00:00Z") }
+{ "_id" : ObjectId("59fb654cead03a76ead41b85"), "name" : "iphone8", "orderDate" : "2017-04-04", "quantity" : 5, "price" : 400, "orderTotal" : 2000, "lineItems" : [ { "name" : "case", "quantity" : 4, "price" : 20 } ], "orderDate2" : ISODate("2017-12-31T00:00:00Z") }
+> // 5. Chnga orderTotal from 2017-02-03 to $63
+> orders.update({orderDate2: '2017-02-03'}, {$set: {orderTotal: 63}})
+WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
+> // 6. Add another lineItem to the order from 4/4/2017
+> orders.insert({ orderDate2: '2017-04-04', lineItems2: [{name: "earphones"},{quantity:5},{price: 5} ]})
+WriteResult({ "nInserted" : 1 })
+> // 7. Change the first lineItem in the order from 1/2/2017 to be for 2 'transistor radio's
+> orders.insert({ orderDate2: '2017-01-02', lineItems2: [{name: "earphones"},{quantity:5},{price: 5} ]})
+WriteResult({ "nInserted" : 1 })
+> orders.update({ orderDate2: '2017-01-02', lineItems2: [{name: "transistor radio's"},{quantity:2},{price: 5} ]})
+2017-11-02T14:23:12.945-0500 E QUERY    [thread1] Error: need an object :
+DBCollection.prototype._parseUpdate@src/mongo/shell/collection.js:515:1
+DBCollection.prototype.update@src/mongo/shell/collection.js:552:18
+@(shell):1:1
+> orders.update({ orderDate2: '2017-01-02', ($set: {lineItems2: [{name: "transistor radio's"},{quantity:2}]})})
+2017-11-02T14:25:20.068-0500 E QUERY    [thread1] SyntaxError: invalid property id @(shell):1:42
+> 
